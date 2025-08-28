@@ -1,47 +1,51 @@
 package control;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
-import java.awt.*;
-import javax.swing.*;
-
-import javax.swing.JFrame;
+import java.nio.charset.StandardCharsets;
 
 public class TiendaFecher {
 
     public static String obtenerProductos(String urlApi) {
 
+
         //Objeto String mas avanzado (incluye signos raros sin que se rompa)
+        //Crea un string para mas opciones
         StringBuilder resultado = new StringBuilder();
+        //Objeto para crar conexion http
+        HttpURLConnection conexion = null;
 
         //Funcion para que consulte hasta que lo tengamos todo
         //Similar al if
         try {
-        //Consulta en internet
+        //Consulta en internet y convierte a un String a una URL
         URL url = new URL(urlApi);
-        HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
+
+        //Configuracion para la conexion HTTP
+        conexion = (HttpURLConnection) url.openConnection();
         conexion.setRequestMethod("GET");
-        conexion.setConnectTimeout(5000);
-        conexion.setReadTimeout(5000);
+        conexion.setConnectTimeout(15000);
+        conexion.setReadTimeout(15000);
         conexion.connect();
 
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
+        //Verificar respuesta del sevidor
+        int code = conexion.getResponseCode();
+        System.out.println(code);
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conexion.getInputStream(),StandardCharsets.UTF_8))){
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                resultado.append(linea).append('\n');
+            }
         }
-
-        //El resultado lo convierte en String
+        } catch (Exception e) {
+            System.out.println("Error " + e);
+        }finally {
+            if(conexion != null) conexion.disconnect();
+        }
         return resultado.toString();
-    }
-    
-    public static void main(String[] args) {
-        JFrame ventana = new JFrame("Tienda Fake"); // Constructor de JFrame (crea la ventana)
-        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cierra el programa al salir
-        ventana.setExtendedState(JFrame.MAXIMIZED_BOTH); // Ventana maximizada (segundo proyecto)
-        ventana.setLayout(new BorderLayout()); // Organiza componentes en zonas
-        ventana.setLocationRelativeTo(null); // Centra la ventana inicialmente
-
-        ventana.setVisible(true);
     }
 }
 //Repasar programacion orientada a objetos
