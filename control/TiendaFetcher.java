@@ -6,7 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class TiendaFecher {
+public class TiendaFetcher {
 
     public static String obtenerProductos(String urlApi) {
 
@@ -40,11 +40,15 @@ public class TiendaFecher {
                 resultado.append(linea).append('\n');
             }
         }
+        
         } catch (Exception e) {
             System.out.println("Error " + e);
-        }finally {
+        }
+        
+        finally {
             if(conexion != null) conexion.disconnect();
         }
+
         return resultado.toString();
     }
 }
